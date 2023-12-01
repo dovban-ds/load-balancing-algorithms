@@ -95,35 +95,37 @@ container.append(greenLine);
 const fullDay = 2700;
 // у меня в системе gmt +03:00 пояс, в условии +00:00, поэтому 2700, а не 2400
 
+// функция для составления числа из часов и минут
+const getTimeNumber = (index, key) => {
+  return (
+    new Date(data[index][key]).getHours() * 100 +
+    new Date(data[index][key]).getMinutes()
+  );
+};
+
 for (let i = 0; i < data.length; i++) {
   if (i === 0) {
-    const firstFromHours =
-      new Date(data[i].from).getHours() * 100 +
-      new Date(data[i].from).getMinutes();
+    const firstFromHours = getTimeNumber(i, "from");
     let spacePercent = (firstFromHours * 100) / fullDay;
     const space = document.createElement("div");
     space.style.width = `${spacePercent}%`;
     space.classList.add("space");
     greenLine.append(space);
+
+    const ball = document.createElement("div");
+    ball.classList.add("ball");
+    const fromPercent = (firstFromHours * 100) / fullDay;
+    const firstToHours = getTimeNumber(i, "to");
+    const toPercent = (firstToHours * 100) / fullDay;
+    const ballWidth = toPercent - fromPercent;
+    ball.style.width = `${ballWidth}%`;
+    greenLine.append(ball);
+    continue;
   }
 
-  let hoursTo;
-  i === data.length - 1
-    ? (hoursTo =
-        new Date(data[i - 1].to).getHours() * 100 +
-        new Date(data[i - 1].to).getMinutes())
-    : (hoursTo =
-        new Date(data[i].to).getHours() * 100 +
-        new Date(data[i].to).getMinutes());
-  // для более точных рассчетов составлял число из часов и минут
-  let hoursFrom;
-  i === data.length - 1
-    ? (hoursFrom =
-        new Date(data[i].from).getHours() * 100 +
-        new Date(data[i].from).getMinutes())
-    : (hoursFrom =
-        new Date(data[i + 1].from).getHours() * 100 +
-        new Date(data[i + 1].from).getMinutes());
+  const hoursTo = getTimeNumber(i - 1, "to");
+
+  const hoursFrom = getTimeNumber(i, "from");
 
   const toPercent = (hoursTo * 100) / fullDay;
   const fromPercent = (hoursFrom * 100) / fullDay;
@@ -138,12 +140,18 @@ for (let i = 0; i < data.length; i++) {
 
   const ball = document.createElement("div");
   ball.classList.add("ball");
+  // рассчитываем ширину шарика
+  const currHoursFrom =
+    new Date(data[i].from).getHours() * 100 +
+    new Date(data[i].from).getMinutes();
+  const currFromPercent = (currHoursFrom * 100) / fullDay;
+  const ballWidth = toPercent - currFromPercent;
+  ball.style.width = `${ballWidth}%`;
   greenLine.append(ball);
   if (i !== 0 && spacePercent < 2) ball.style.marginLeft = `-${spacePercent}%`;
 
   if (i === data.length - 1) {
-    const lastToHours =
-      new Date(data[i].to).getHours() * 100 + new Date(data[i].to).getMinutes();
+    const lastToHours = getTimeNumber(i, "to");
     spacePercent = 100 - (lastToHours * 100) / fullDay;
     const space = document.createElement("div");
     space.style.width = `${spacePercent}%`;
