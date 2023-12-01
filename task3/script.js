@@ -141,9 +141,7 @@ for (let i = 0; i < data.length; i++) {
   const ball = document.createElement("div");
   ball.classList.add("ball");
   // рассчитываем ширину шарика
-  const currHoursFrom =
-    new Date(data[i].from).getHours() * 100 +
-    new Date(data[i].from).getMinutes();
+  const currHoursFrom = getTimeNumber(i, "from");
   const currFromPercent = (currHoursFrom * 100) / fullDay;
   const ballWidth = toPercent - currFromPercent;
   ball.style.width = `${ballWidth}%`;
